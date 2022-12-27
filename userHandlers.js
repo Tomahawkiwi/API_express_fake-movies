@@ -59,6 +59,26 @@ const getUserById = (req, res) => {
     });
 };
 
+const getUserByEmailWithPasswordAndPassToNext = async (req, res, next) => {
+  const { email } = req.body;
+
+  try {
+    database
+      .query("SELECT * FROM users WHERE email = ?", [email])
+      .then(([users]) => {
+        if (users[0] != null) {
+          req.user = users[0];
+          next();
+        } else {
+          res.sendStatus(401);
+        }
+      });
+  } catch (error) {
+    console.error(err);
+    res.status(500).json({ message: error });
+  }
+};
+
 const postUser = (req, res) => {
   const { firstname, lastname, email, city, language, hashedPassword } =
     req.body;
@@ -120,6 +140,7 @@ const deleteUser = (req, res) => {
 module.exports = {
   getUsers,
   getUserById,
+  getUserByEmailWithPasswordAndPassToNext,
   postUser,
   updateUser,
   deleteUser,

@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const express = require("express");
-const { hashPassword } = require("./auth");
+const { hashPassword, verifyPassword } = require("./auth");
 
 const app = express();
 
@@ -32,7 +32,11 @@ app.put("/api/users/:id", userHandlers.updateUser);
 app.delete("/api/users/:id", userHandlers.deleteUser);
 
 const loginHandlers = require("./loginHandlers");
-app.delete("/api/login", loginHandlers.isItDwight);
+app.post(
+  "/api/login",
+  userHandlers.getUserByEmailWithPasswordAndPassToNext,
+  verifyPassword
+);
 
 app.listen(port, (err) => {
   if (err) {
